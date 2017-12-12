@@ -5,7 +5,7 @@ namespace :ptourist do
   BOYS=["greg","peter","bobby"]
   GIRLS=["marsha","jan","cindy"]
   BASE_URL="https://dev9.jhuep.com/fullstack-capstone"
-  BASE_URL2="https://www.dropbox.com/s/"
+  BASE_URL2="https://www.dropbox.com/s"
 
   def user_name first_name
     last_name = (first_name=="alice") ? "nelson" : "brady"
