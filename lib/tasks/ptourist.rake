@@ -324,10 +324,58 @@ Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio
      :priority=>0
      },
     {:path=>"yp3ur60616eaj1j/thessaloniki_white_tower.jpg",
-     :caption=>"thessaloniki White Tower",
+     :caption=>"Thessaloniki White Tower",
      :lat=>40.626699, 
      :lng=>22.948426,
      :priority=>1
+     }
+    ]
+    create_thing thing, organizer, members, images, BASE_URL2
+
+    thing={:name=>"Athens",
+    :description=>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla congue ultricies elit molestie congue. Donec vulputate urna lectus, sed placerat purus placerat vel. Suspendisse molestie finibus augue quis efficitur. Nunc lobortis facilisis tortor, molestie facilisis quam pharetra at. Cras sed quam in lectus laoreet dictum id eget nibh. ",
+    :notes=>""}
+    organizer=get_user("alice")
+    members=girl_users
+    images=[
+    {:path=>"7gdu4c6mhjxv4sa/athens_nightlife.jpg",
+     :caption=>"Athens Nightlife",
+     :lat=>40.641241, 
+     :lng=>22.959362,
+     :priority=>1
+     },
+    {:path=>"2o8hrr4whpe6992/athens_partenon.jpg",
+     :caption=>"Athens Parthenon",
+     :lat=>37.985750, 
+     :lng=>23.727074,
+     :priority=>0
+     }
+    ]
+    create_thing thing, organizer, members, images, BASE_URL2
+
+    thing={:name=>"Santorini",
+    :description=>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla congue ultricies elit molestie congue. Donec vulputate urna lectus, sed placerat purus placerat vel. Suspendisse molestie finibus augue quis efficitur. Nunc lobortis facilisis tortor, molestie facilisis quam pharetra at. Cras sed quam in lectus laoreet dictum id eget nibh. ",
+    :notes=>""}
+    organizer=get_user("peter")
+    members=boy_users
+    images=[
+    {:path=>"edo1f4bi37tr0t2/santorini_church.jpg",
+     :caption=>"Santorini Greek Church",
+     :lat=>36.432251,  
+     :lng=>25.422318,
+     :priority=>1
+     },
+    {:path=>"qf583a2nbq9813z/santorini_stair_view_560.jpg",
+     :caption=>"Santorini Stair View",
+     :lat=>36.432251, 
+     :lng=>25.422318,
+     :priority=>0
+     },
+    {:path=>"pfw80rl0geu2hzx/santorini_wide_staircase_560.jpg",
+     :caption=>"Santorini Stair View",
+     :lat=>36.418446, 
+     :lng=>225.430934,
+     :priority=>0
      }
     ]
     create_thing thing, organizer, members, images, BASE_URL2
