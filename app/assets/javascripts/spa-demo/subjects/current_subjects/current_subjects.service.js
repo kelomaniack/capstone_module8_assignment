@@ -25,12 +25,16 @@
     service.isCurrentThingIndex = isCurrentThingIndex;
     service.nextThing = nextThing;
     service.previousThing = previousThing;
+    service.imagesAll = [];
+    service.thingsAll = [];
+    service.tag_id = null;
+    service.filterByTag = filterByTag;
 
     //refresh();
     $rootScope.$watch(function(){ return currentOrigin.getVersion(); }, refresh);
     return;
     ////////////////
-    function refresh() {      
+    function refresh() {
       var params=currentOrigin.getPosition();
       if (!params || !params.lng || !params.lat) {
         params=angular.copy(APP_CONFIG.default_position);
@@ -42,15 +46,23 @@
         params["miles"]=currentOrigin.getDistance();
       }
       params["order"]="ASC";
+      if (service.tag_id) {
+        params["tag_id"] = service.tag_id;
+      }
       console.log("refresh",params);
 
       var p1=refreshImages(params);
-      params["subject"]="thing";      
+      params["subject"] = "thing";
       var p2=refreshThings(params);
-      $q.all([p1,p2]).then(
-        function(){
+      $q.all([p1, p2]).then(
+        function() {
           service.setCurrentImageForCurrentThing();
-        });      
+        });
+    }
+
+    function filterByTag(tag) {
+      service.tag_id = tag.id;
+      refresh();
     }
 
     function refreshImages(params) {
@@ -93,7 +105,7 @@
         service.setCurrentThing(service.thingIdx + 1);
       } else if (service.things.length >= 1) {
         service.setCurrentThing(0);
-      }    
+      }
     }
     function previousThing() {
       if (service.thingIdx !== null) {
@@ -101,7 +113,7 @@
       } else if (service.things.length >= 1) {
         service.setCurrentThing(service.things.length-1);
       }
-    }    
+    }
   }
 
   CurrentSubjects.prototype.getVersion = function() {
@@ -181,7 +193,7 @@
             break;
           }
         }
-      }      
+      }
     }
   }
 
@@ -213,7 +225,7 @@
       }
     }
     if (!found) {
-      this.setCurrentImage(null, true);      
+      this.setCurrentImage(null, true);
     }
   }
   CurrentSubjects.prototype.setCurrentThingId = function(thing_id, skipImage) {
@@ -228,8 +240,8 @@
       }
     }
     if (!found) {
-      this.setCurrentThing(null, true);      
-    }    
+      this.setCurrentThing(null, true);
+    }
   }
   CurrentSubjects.prototype.setCurrentSubjectId = function(thing_id, image_id) {
     console.log("setCurrentSubject", thing_id, image_id);

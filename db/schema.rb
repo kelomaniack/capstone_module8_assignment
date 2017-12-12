@@ -16,12 +16,6 @@ ActiveRecord::Schema.define(version: 20170304202140) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
-    t.string   "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "foos", force: :cascade do |t|
     t.string   "name",       null: false
     t.datetime "created_at", null: false
@@ -39,17 +33,6 @@ ActiveRecord::Schema.define(version: 20170304202140) do
 
   add_index "images", ["creator_id"], name: "index_images_on_creator_id", using: :btree
   add_index "images", ["lng", "lat"], name: "index_images_on_lng_and_lat", using: :btree
-
-  create_table "inquiries", force: :cascade do |t|
-    t.text     "question"
-    t.integer  "thing_id"
-    t.integer  "creator_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "inquiries", ["creator_id"], name: "index_inquiries_on_creator_id", using: :btree
-  add_index "inquiries", ["thing_id"], name: "index_inquiries_on_thing_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
     t.integer  "user_id",    null: false
@@ -127,7 +110,6 @@ ActiveRecord::Schema.define(version: 20170304202140) do
     t.json     "tokens"
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
-    t.integer  "image_id"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

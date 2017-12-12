@@ -1,0 +1,22 @@
+Module 8 Assignment Mapping
+PROMPT
+Identify which assignment option you implemented and describe what the peer grader will be able to do with the enhancement relative to the rubric requirements. Feel free to boast but focus on what the peer grader needs to know first.
+I implemented the Types of things option. 
+
+Open the URL and go to Go To -> Image-Things
+Click the Image-Things and you will see the screen with the Things on the left panel and the map on the right one. 
+If you click on a marker on the Map, you should see the highlighted corresponding Thing on the left panel (of course if it is an orphan image; an image without a thing you won't see any highlighted thing on the left :) )
+If you click on the Thing on the left, you will see the corresponding marker on the map on the right panel. 
+Just try it and i am looking forward for your feedback! Enjoy!
+
+PROMPT
+Supply the base, public URL of your web client that hosts your solution for this assignment.
+ https://tranquil-temple-47845.herokuapp.com/
+
+ PROMPT
+Supply the URL of a branch or tag in your public Git repository that represents the version of source code deployed for the Rails portion of your solution. This may be the same URL as the SPA version if you are using a single source tree.
+ https://github.com/kelomaniack/capstone_module8_assignment
+
+ PROMPT
+Supply the URL of a branch or tag in your public Git repository that represents the version of source code deployed for the SPA portion of your solution. This may be the same URL as the Rails version if you are using a single source tree.
+ https://github.com/kelomaniack/capstone_module8_assignment

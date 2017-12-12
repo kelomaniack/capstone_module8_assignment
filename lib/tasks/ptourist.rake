@@ -5,6 +5,7 @@ namespace :ptourist do
   BOYS=["greg","peter","bobby"]
   GIRLS=["marsha","jan","cindy"]
   BASE_URL="https://dev9.jhuep.com/fullstack-capstone"
+  BASE_URL2="https://www.dropbox.com/s/"
 
   def user_name first_name
     last_name = (first_name=="alice") ? "nelson" : "brady"
@@ -50,15 +51,18 @@ namespace :ptourist do
     @mike_user ||= get_user("mike")
   end
 
-  def create_image organizer, img
+  def create_image organizer, img, base_url=BASE_URL
     puts "building image for #{img[:caption]}, by #{organizer.name}"
-    image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption],:lat=>img[:lat],:lng=>img[:lng])
+    image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption],:lng=>img[:lng],:lat=>img[:lat])
     organizer.add_role(Role::ORGANIZER, image).save
-    create_image_content img.merge(:image=>image)
+    create_image_content img.merge(:image=>image), base_url
   end
 
-  def create_image_content img
-    url="#{BASE_URL}/#{img[:path]}"
+  def create_image_content img, base_url=BASE_URL
+    url="#{base_url}/#{img[:path]}"
+    if base_url == BASE_URL2
+        url = url + "?raw=1"
+    end
     puts "downloading #{url}"
     contents = open(url,{ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
     original_content=ImageContent.new(:image_id=>img[:image].id,
@@ -67,7 +71,7 @@ namespace :ptourist do
     ImageContentCreator.new(img[:image], original_content).build_contents.save!
   end
 
-  def create_thing thing, organizer, members, images
+  def create_thing thing, organizer, members, images, base_url=BASE_URL
     thing=Thing.create!(thing)
     organizer.add_role(Role::ORGANIZER, thing).save
     m=members.map { |member|
@@ -80,20 +84,21 @@ namespace :ptourist do
     puts "added members for #{thing.name}: #{first_names(m)}"
     images.each do |img|
       puts "building image for #{thing.name}, #{img[:caption]}, by #{organizer.name}"
-      image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption],:lat=>img[:lat],:lng=>img[:lng])
+      image=Image.create(:creator_id=>organizer.id,:caption=>img[:caption],:lng=>img[:lng],:lat=>img[:lat])
       organizer.add_role(Role::ORGANIZER, image).save
       ThingImage.new(:thing=>thing, :image=>image, 
                      :creator_id=>organizer.id)
                 .tap {|ti| ti.priority=img[:priority] if img[:priority]}.save!
-      create_image_content img.merge(:image=>image)
+      create_image_content img.merge(:image=>image), base_url
     end
+    thing
   end
 
   desc "reset all data"
-  task reset_all: [:users,:subjects] do
+  task reset_all: [:users,:subjects, :tags] do
   end
 
-  desc "deletes things, images, and links" 
+  desc "deletes things, images, and links"
   task delete_subjects: :environment do
     puts "removing #{Thing.count} things and #{ThingImage.count} thing_images"
     puts "removing #{Image.count} images"
@@ -128,7 +133,7 @@ namespace :ptourist do
     puts "users:#{User.pluck(:name)}"
   end
 
-  desc "reset things, images, and links" 
+  desc "reset things, images, and links"
   task subjects: [:users] do
     puts "creating things, images, and links"
 
@@ -208,7 +213,7 @@ namespace :ptourist do
     images=[
     {:path=>"db/bta/hitim-001.jpg",
      :caption=>"Hotel Front Entrance",
-     :lng=>-76.64285450000001, 
+     :lng=>-76.64285450000001,
      :lat=>39.454538,
      :priority=>0
      }
@@ -223,33 +228,33 @@ namespace :ptourist do
     images=[
     {:path=>"db/bta/naqua-001.jpg",
      :caption=>"National Aquarium buildings",
-     :lng=>-76.6083, 
+     :lng=>-76.6083,
      :lat=>39.2851,
      :priority=>0
      },
     {:path=>"db/bta/naqua-002.jpg",
      :caption=>"Blue Blubber Jellies",
-     :lng=>-76.6083, 
+     :lng=>-76.6083,
      :lat=>39.2851,
      },
     {:path=>"db/bta/naqua-003.jpg",
      :caption=>"Linne's two-toed sloths",
-     :lng=>-76.6083, 
+     :lng=>-76.6083,
      :lat=>39.2851,
      },
     {:path=>"db/bta/naqua-004.jpg",
      :caption=>"Hosting millions of students and teachers",
-     :lng=>-76.6083, 
+     :lng=>-76.6083,
      :lat=>39.2851,
      }
     ]
     create_thing thing, organizer, members, images
 
     thing={:name=>"Hyatt Place Baltimore",
-    :description=>"The New Hyatt Place Baltimore/Inner Harbor, located near Fells Point, offers a refreshing blend of style and innovation in a neighborhood alive with cultural attractions, shopping and amazing local restaurants. 
+    :description=>"The New Hyatt Place Baltimore/Inner Harbor, located near Fells Point, offers a refreshing blend of style and innovation in a neighborhood alive with cultural attractions, shopping and amazing local restaurants.
 
 Whether you’re hungry, thirsty or bored, Hyatt Place Baltimore/Inner Harbor has something to satisfy your needs. Start your day with our free a.m. Kitchen Skillet™, featuring hot breakfast sandwiches, breads, cereals and more. Visit our 24/7 Gallery Market for freshly packaged grab n’ go items, order a hot, made-to-order appetizer or sandwich from our 24/7 Gallery Menu or enjoy a refreshing beverage from our Coffee to Cocktails Bar.
- 
+
 Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio equipment and free weights. Then, float and splash around in our indoor pool, open year-round for your relaxation. There’s plenty of other spaces throughout our Inner Harbor hotel for you to chill and socialize with other guests. For your comfort and convenience, all Hyatt Place hotels are smoke-free.
 "}
     organizer=get_user("marsha")
@@ -257,58 +262,80 @@ Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio
     images=[
     {:path=>"db/bta/hpm-001.jpg",
      :caption=>"Hotel Front Entrance",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847,
      :priority=>0
      },
     {:path=>"db/bta/hpm-002.jpg",
      :caption=>"Terrace",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847,
      :priority=>1
      },
     {:path=>"db/bta/hpm-003.jpg",
      :caption=>"Cozy Corner",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-004.jpg",
      :caption=>"Fitness Center",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-005.jpg",
      :caption=>"Gallery Area",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-006.jpg",
      :caption=>"Harbor Room",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-007.jpg",
      :caption=>"Indoor Pool",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-008.jpg",
      :caption=>"Lobby",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      },
     {:path=>"db/bta/hpm-009.jpg",
      :caption=>"Specialty King",
-     :lng=>-76.5987, 
+     :lng=>-76.5987,
      :lat=>39.2847
      }
     ]
     create_thing thing, organizer, members, images
 
+    # My data addition
+    thing={:name=>"Thessaloniki",
+    :description=>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla congue ultricies elit molestie congue. Donec vulputate urna lectus, sed placerat purus placerat vel. Suspendisse molestie finibus augue quis efficitur. Nunc lobortis facilisis tortor, molestie facilisis quam pharetra at. Cras sed quam in lectus laoreet dictum id eget nibh. ",
+    :notes=>""}
+    organizer=get_user("peter")
+    members=boy_users
+    images=[
+    {:path=>"4cqdfujnwobcjyk/thessaloniki_castle_view.jpg",
+     :caption=>"Thessaloniki Castle View",
+     :lat=>40.641241, 
+     :lng=>22.959362,
+     :priority=>0
+     },
+    {:path=>"yp3ur60616eaj1j/thessaloniki_white_tower.jpg",
+     :caption=>"thessaloniki White Tower",
+     :lat=>40.626699, 
+     :lng=>22.948426,
+     :priority=>1
+     }
+    ]
+    create_thing thing, organizer, members, images, BASE_URL2
+
     organizer=get_user("peter")
     image= {:path=>"db/bta/aquarium.jpg",
      :caption=>"Aquarium",
-     :lng=>-76.6083, 
+     :lng=>-76.6083,
      :lat=>39.2851
      }
     create_image organizer, image
@@ -316,7 +343,7 @@ Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio
     organizer=get_user("jan")
     image= {:path=>"db/bta/bromo_tower.jpg",
      :caption=>"Bromo Tower",
-     :lng=>-76.6228645, 
+     :lng=>-76.6228645,
      :lat=>39.2876736
      }
     create_image organizer, image
@@ -356,7 +383,7 @@ Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio
     organizer=get_user("marsha")
     image= {:path=>"db/bta/visitor_center.jpg",
      :caption=>"Visitor Center",
-     :lng=>-76.6155792, 
+     :lng=>-76.6155792,
      :lat=>39.28565
      }
     create_image organizer, image
@@ -369,8 +396,24 @@ Work up a sweat in our 24-hour StayFit Gym, which features Life Fitness® cardio
      }
     create_image organizer, image
 
+
     puts "#{Thing.count} things created and #{ThingImage.count("distinct thing_id")} with images"
     puts "#{Image.count} images created and #{ThingImage.count("distinct image_id")} for things"
+  end
+
+  def create_tag(name, thing_ids)
+    tag = Tag.create(name: name)
+    thing_ids.each do |i|
+      ThingTag.create(thing_id: i, tag_id: tag.id)
+    end
+  end
+
+  desc "reset tags"
+  task :tags => :environment do
+    Tag.destroy_all()
+    ['Museum', 'Restaurant', 'Sightseeing'].each_with_index do |name, idx|
+      create_tag(name, [idx * 2 + 1, idx * 2 + 2])
+    end
   end
 
 end
